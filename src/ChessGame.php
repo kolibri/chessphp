@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Kolibri;
 
+use Kolibri\Exception\InvalidPgnException;
 use Ryanhs\Chess\Chess;
 
 class ChessGame
@@ -11,50 +12,21 @@ class ChessGame
     /** @var Chess */
     private $ryanhsChess;
 
-    public function __construct(Chess $chess)
+    public function __construct(string $pgn = null)
     {
-        $this->ryanhsChess = $chess;
-    }
+        $this->ryanhsChess = new Chess();
 
-    public static function new(): self
-    {
-        return new self(new Chess());
-    }
-
-    public static function fromPgn(string $pgn): self
-    {
-        if (!Chess::validatePgn($pgn)) {
-            throw new \InvalidArgumentException('Invalid PGN given.');
+        if (null !== $pgn) {
+            if (!Chess::validatePgn($pgn)) {
+                throw new InvalidPgnException($pgn);
+            }
+            $this->ryanhsChess->loadPgn($pgn);
         }
-
-        $chess = new Chess();
-        $chess->loadPgn($pgn);
-
-        return new self($chess);
-    }
-
-    public static function fromFen(string $fen): self
-    {
-        if (!self::validateFen($fen)) {
-            throw new \InvalidArgumentException('Invalid FEN given.');
-        }
-
-        $chess = new Chess();
-        $chess->load($fen);
-
-        return new self($chess);
-    }
-
-    public static function validateFen(string $fen): bool
-    {
-        $result = Chess::validateFen($fen);
-
-        return $result['valid'] === true;
     }
 
     public function getPgn(): string
     {
-        return $this->ryanhsChess->pgn();
+        return $this->ryanhsChess->pgn(['max_width' => 70]);
     }
 
     public function getFen(): string
@@ -65,5 +37,25 @@ class ChessGame
     public function getAsciiBoard(): string
     {
         return $this->ryanhsChess->ascii();
+    }
+
+    public function getMoveHistory(): array
+    {
+        return $this->ryanhsChess->history();
+    }
+
+    public function getWhitePlayerName(): string
+    {
+        return $this->getHeader('White');
+    }
+
+    public function getBlackPlayerName(): string
+    {
+        return $this->getHeader('Black');
+    }
+
+    private function getHeader($name): string
+    {
+        return $this->ryanhsChess->header()[$name];
     }
 }
