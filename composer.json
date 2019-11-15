@@ -1,0 +1,29 @@
+{
+  "name": "kolibri/chessphp",
+  "description": "Utils for handling pgns in php",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Lukas Sadzik",
+      "email": "lukas.sadzik@gmail.de"
+    }
+  ],
+  "require": {
+    "ryanhs/chess.php": "^1.0",
+    "php": "^7.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^7.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Kolibri\\": "src/"
+    }
+  },
+  "license": "MIT",
+  "autoload-dev": {
+    "psr-4": {
+      "Kolibri\\Tests\\": "tests/"
+    }
+  }
+}
